@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的GitHub Pages站点</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, "Microsoft YaHei", sans-serif;
+            background-color: #111827;
+            color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 3440px;
+            width: 100%;
+        }
+        header {
+            border-bottom: 1px solid #374151;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: #38bdf8;
+            margin-bottom: 12px;
+        }
+        .desc {
+            color: #9ca3af;
+            font-size: 1.05rem;
+        }
+        main {
+            line-height: 1.7;
+            font-size: 1.02rem;
+        }
+        section {
+            margin-bottom: 36px;
+        }
+        h2 {
+            font-size: 1.4rem;
+            margin: 20px 0 14px;
+            color: #f3f4f6;
+        }
+        p {
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            background: #1f2937;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #374151;
+        }
+
+        /* ========== 瀑布流相册 ========== */
+        .waterfall {
+            column-count: 4;
+            column-gap: 16px;
+            margin-top:16px;
+        }
+        .gallery-item {
+            background: #1f2937;
+            border-radius: 10px;
+            overflow: hidden;
+            border:1px solid #374151;
+            margin-bottom:16px;
+            break-inside: avoid;
+            transition: 0.25s ease;
+            cursor: pointer;
+        }
+        .gallery-item:hover{
+            transform: translateY(-4px);
+            border-color:#38bdf8;
+        }
+        .gallery-item img{
+            width:100%;
+            display:block;
+        }
+        .gallery-caption{
+            padding:10px 12px;
+            font-size:0.9rem;
+            color:#b9c3d4;
+        }
+        /* 响应式瀑布流列数 */
+        @media (max-width:1400px) { .waterfall { column-count:3; } }
+        @media (max-width:900px)  { .waterfall { column-count:2; } }
+        @media (max-width:560px)  { .waterfall { column-count:1; } }
+
+        /* ========== 分页控制 ========== */
+        .pagination {
+            display:flex;
+            gap:8px;
+            margin-top:24px;
+            justify-content:center;
+            align-items:center;
+        }
+        .page-btn {
+            padding:8px 14px;
+            background:#1f2937;
+            border:1px solid #374151;
+            color:#e5e7eb;
+            border-radius:8px;
+            cursor:pointer;
+        }
+        .page-btn:hover { border-color:#38bdf8; }
+        .page-btn.active { background:#38bdf8; color:#111827; border-color:#38bdf8; }
+        .page-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+        /* ========== Lightbox 灯箱 ========== */
+        .lightbox {
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.92);
+            z-index:999;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+        .lightbox.show { display:flex; }
+        .lightbox-inner {
+            position:relative;
+            max-width:92vw;
+            max-height:92vh;
+        }
+        .lightbox-img {
+            max-width:100%;
+            max-height:90vh;
+            border-radius:6px;
+        }
+        .lightbox-close, .lightbox-prev, .lightbox-next {
+            position:absolute;
+            color:#fff;
+            font-size:2.2rem;
+            cursor:pointer;
+            user-select:none;
+        }
+        .lightbox-close { top:-36px; right:0; }
+        .lightbox-prev { left:-44px; top:50%; transform:translateY(-50%); }
+        .lightbox-next { right:-44px; top:50%; transform:translateY(-50%); }
+        .lightbox-caption {
+            text-align:center;
+            margin-top:12px;
+            color:#ccc;
+        }
+        @media (max-width:720px){
+            .lightbox-prev { left:4px; }
+            .lightbox-next { right:4px; }
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #374151;
+            color: #6b7280;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>欢迎来到我的站点</h1>
+            <div class="desc">基于 GitHub Pages 搭建 · 在 Codespaces 开发</div>
+        </header>
+        <main>
+            <section class="card">
+                <h2>关于本站</h2>
+                <p>瀑布流相册 + 灯箱大图预览 + 分页。图片放到 images 文件夹，推荐ACDSee预先压缩长边，网页加载更快。</p>
+            </section>
+
+            <section>
+                <h2>图片相册</h2>
+                <div class="waterfall" id="galleryWrap">
+                    <!-- =========图片列表，在这里新增图片========= -->
+                    <div class="gallery-item" data-src="images/金銮殿.png" data-title="金銮殿">
+                        <img src="images/金銮殿.png" alt="金銮殿">
+                        <div class="gallery-caption">金銮殿</div>
+                    </div>
+                    <div class="gallery-item" data-src="images/太上老君炼丹炉1.png" data-title="太上老君炼丹炉1">
+                        <img src="images/太上老君炼丹炉1.png" alt="太上老君炼丹炉1">
+                        <div class="gallery-caption">太上老君炼丹炉1</div>
+                    </div>
+                    <div class="gallery-item" data-src="images/太上老君炼丹炉1.png" data-title="太上老君炼丹炉1">
+                        <img src="images/太上老君炼丹炉1.png" alt="太上老君炼丹炉1">
+                        <div class="gallery-caption">太上老君炼丹炉1</div>
+                    </div>
+                    <div class="gallery-item" data-src="images/炼丹炉2.png" data-title="炼丹炉2">
+                        <img src="images/炼丹炉2.png" alt="炼丹炉2">
+                        <div class="gallery-caption">炼丹炉2</div>
+                    </div>
+                    <div class="gallery-item" data-src="images/demo5.jpg" data-title="图片标题5">
+                        <img src="images/demo5.jpg" alt="图片标题5">
+                        <div class="gallery-caption">图片标题5</div>
+                    </div>
+                    <div class="gallery-item" data-src="images/demo6.jpg" data-title="图片标题6">
+                        <img src="images/demo6.jpg" alt="图片标题6">
+                        <div class="gallery-caption">图片标题6</div>
+                    </div>
+                    <!-- 复制上面整块新增图片 -->
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </section>
+
+            <section>
+                <h2>快速上手</h2>
+                <p>1. 在Codespaces里修改 index.html</p>
+                <p>2. 终端运行 <code>python -m http.server 8000</code> 预览</p>
+                <p>3. git 提交推送仓库，开启 GitHub Pages 即可公网访问</p>
+            </section>
+        </main>
+        <footer>
+            © 2026 QuinnMrZ | Powered by GitHub Pages
+        </footer>
+    </div>
+
+    <!-- =========灯箱DOM========= -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-inner">
+            <span class="lightbox-close">&times;</span>
+            <span class="lightbox-prev">&lsaquo;</span>
+            <img class="lightbox-img" id="lbImg" src="" alt="">
+            <span class="lightbox-next">&rsaquo;</span>
+            <div class="lightbox-caption" id="lbCaption"></div>
+        </div>
+    </div>
+
+    <script>
+        // 配置项
+        const PAGE_SIZE = 4; // 每页显示几张，自行修改
+        const galleryWrap = document.getElementById('galleryWrap');
+        const allItems = Array.from(document.querySelectorAll('.gallery-item'));
+        const paginationEl = document.getElementById('pagination');
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+        const lbCaption = document.getElementById('lbCaption');
+        let currentPage = 1;
+        let activeIndex = 0;
+
+        // 渲染分页相册
+        function renderGallery(){
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            allItems.forEach((el, idx)=>{
+                el.style.display = (idx >= start && idx < end) ? 'block' : 'none';
+            })
+            renderPagination();
+        }
+        function renderPagination(){
+            const totalPage = Math.ceil(allItems.length / PAGE_SIZE);
+            paginationEl.innerHTML = '';
+            // 上一页
+            const prevBtn = document.createElement('button');
+            prevBtn.innerText = '上一页';
+            prevBtn.className = 'page-btn';
+            prevBtn.disabled = currentPage <= 1;
+            prevBtn.onclick = ()=>{ currentPage--; renderGallery(); }
+            paginationEl.appendChild(prevBtn);
+            // 页码
+            for(let i=1;i<=totalPage;i++){
+                const b = document.createElement('button');
+                b.innerText = i;
+                b.className = 'page-btn' + (i === currentPage ? ' active' : '');
+                b.onclick = ()=>{ currentPage = i; renderGallery(); }
+                paginationEl.appendChild(b);
+            }
+            // 下一页
+            const nextBtn = document.createElement('button');
+            nextBtn.innerText = '下一页';
+            nextBtn.className = 'page-btn';
+            nextBtn.disabled = currentPage >= totalPage;
+            nextBtn.onclick = ()=>{ currentPage++; renderGallery(); }
+            paginationEl.appendChild(nextBtn);
+        }
+
+        // 灯箱逻辑
+        function openLightbox(index){
+            activeIndex = index;
+            const item = allItems[activeIndex];
+            lbImg.src = item.dataset.src;
+            lbCaption.innerText = item.dataset.title;
+            lightbox.classList.add('show');
+        }
+        function closeLightbox(){
+            lightbox.classList.remove('show');
+        }
+        function prevImg(){
+            activeIndex = (activeIndex -1 + allItems.length) % allItems.length;
+            const item = allItems[activeIndex];
+            lbImg.src = item.dataset.src;
+            lbCaption.innerText = item.dataset.title;
+        }
+        function nextImg(){
+            activeIndex = (activeIndex +1) % allItems.length;
+            const item = allItems[activeIndex];
+            lbImg.src = item.dataset.src;
+            lbCaption.innerText = item.dataset.title;
+        }
+        // 绑定点击
+        allItems.forEach((item,idx)=>{
+            item.onclick = ()=> openLightbox(idx);
+        })
+        document.querySelector('.lightbox-close').onclick = closeLightbox;
+        document.querySelector('.lightbox-prev').onclick = prevImg;
+        document.querySelector('.lightbox-next').onclick = nextImg;
+        lightbox.onclick = (e)=>{ if(e.target === lightbox) closeLightbox(); }
+        // 键盘方向键切换
+        document.addEventListener('keydown',e=>{
+            if(!lightbox.classList.contains('show')) return;
+            if(e.key === 'Escape') closeLightbox();
+            if(e.key === 'ArrowLeft') prevImg();
+            if(e.key === 'ArrowRight') nextImg();
+        })
+
+        renderGallery();
+    </script>
+</body>
+</html>
